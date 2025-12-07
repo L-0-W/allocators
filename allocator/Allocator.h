@@ -1,11 +1,11 @@
 #pragma once
 #include <cstdint>
-
+#include <cstddef>
 
 class Allocator 
 {
 public:
-	Allocator(size_t size, void* start)
+	Allocator(size_t size, std::byte* start) noexcept
 	{
 		_start = start;
 		_size = size;
@@ -19,16 +19,16 @@ public:
 		_start = nullptr; _size = 0;
 	}
 
-	virtual void* allocate(size_t size, uint8_t alignment = 4) = 0;
-	virtual void deallocate(void* p) = 0;
-	void* getStart() const { return _start; };
+	virtual std::byte* allocate(size_t size, std::uint8_t alignment = 4) = 0;
+	virtual void deallocate(std::byte* p) = 0;
+	std::byte* getStart() const { return _start; };
 	size_t getSize() const { return _size; };
 	size_t getUsedMemory() const { return _used_memory; };
 	size_t getNumAllocations() const { return _num_allocations; };
 
 
 protected:
-	void* _start;
+	std::byte* _start;
 	size_t _size;
 	size_t _used_memory;
 	size_t _num_allocations;
@@ -46,7 +46,7 @@ namespace allocator {
 		return new (allocator.allocate(sizeof(T), __alignof(T))) T(t);
 	}
 
-	template <class T> void deallocateDelete(Allocator& allocator, T& object)
+	template <class T> void deallocateDelete(Allocator& allocator, T& object) noexcept
 	{
 		object.~T();
 		allocator.deallocate(&object);

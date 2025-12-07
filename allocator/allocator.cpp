@@ -1,25 +1,32 @@
-#include "LinearAllocator.h"
-#include "Allocator.h"
-
+#include "AllocatorMy.h"
 #include <iostream>
+#include <print>
+
+
+struct ent
+{
+	int x{ 0 }, y{ 0 };
+};
 
 int main()
 {
-	char buffer[90];
-	LinearAllocator la{ 90, buffer};
+
+	LinearAllocatorMy linear_allocator = allocators::linear::init(1024);
+
+	auto result_linear = linear_allocator.allocate<int>(1);
+	auto result_linear2 = linear_allocator.allocate<int>(1);
+	auto result_linear3 = linear_allocator.allocate<int>(1);
 
 
-	auto abcd = allocator::allocateArray<int>(la, 8);
-	auto age = allocator::allocateNew<int>(la);
+	std::println("Alocando em: {}", (void*)result_linear);
+	std::println("Alocando em: {}", (void*)result_linear2);
+	std::println("Alocando em: {}", (void*)result_linear3);
 
-	abcd[0] = 5;
-	*age = 25;
+	std::println("Limpando...");
+	linear_allocator.clear();
 
-
-	std::cout << "Endereço: "  << abcd << "\n" << "Valor: " << abcd[0] << "\n";
-	std::cout << "Endereço: " << age << "\n" << "Valor: " << *age << "\n";
-
-
+	auto result_linear4 = linear_allocator.allocate<int>(1);
+	std::println("Alocando em: {}", (void*)result_linear4);
 
 	return 0;
 }
